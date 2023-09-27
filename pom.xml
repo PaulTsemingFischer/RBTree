@@ -64,7 +64,7 @@
                         <id>default-cli</id>
                         <configuration>
                             <mainClass>
-                                com.github.paultsemingfischer.rbtree/com.github.paultsemingfischer.rbtree.HelloApplication
+                                com.github.paultsemingfischer.rbtree/com.github.paultsemingfischer.rbtree.Main
                             </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
