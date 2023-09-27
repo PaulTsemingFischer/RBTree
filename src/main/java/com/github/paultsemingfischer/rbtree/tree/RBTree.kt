@@ -1,24 +1,34 @@
 package com.github.paultsemingfischer.rbtree.tree
+//Add binary search tree
+class RBTree<E : Comparable<E>> : BinaryTree<E, RBTree.RBNode<E>>(){
+    override var rootNode: RBNode<E>? = null
 
-class RBTree<E : Comparable<E>> : BinaryTree<E>(){
-    override val rootNode: RBNode<E> = TODO()
-
+    //fix this
     //you had better give me a red black node, or I will be sad
-    override fun addNode(node: Node<E>) {
+    override fun addNode(node: RBNode<E>) : RBNode<E>{
         TODO("Not yet implemented")
     }
 
-    override fun removeNode(): Node<E> {
+    override fun removeNode(): RBNode<E> {
         TODO("Not yet implemented")
     }
 
-    inner class RBNode<E>(data: E, var color: NodeColor, var parent: RBNode<E>?, left: RBNode<E>? = null, right: RBNode<E>? = null) : Node<E>(data, left, right){ //is there going to be a problem here where RBNode isn't a Node, so it won't be able to be supered
+    class RBNode<E : Comparable<E>>(data: E,
+                                    private var color: NodeColor,
+                                    var parent: RBNode<E>?,
+                                    left: RBNode<E>? = null,
+                                    right: RBNode<E>? = null
+                                        ) : Node<E, RBNode<E>>(data, left, right){
+
         fun switchColor() : NodeColor{
             color = when (color) {
                 NodeColor.RED -> NodeColor.BLACK
                 else -> NodeColor.RED
             }
             return color
+        }
+        override fun isLeaf(): Boolean{
+           TODO() //example
         }
     }
 
