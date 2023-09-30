@@ -5,10 +5,10 @@ abstract class BinaryTree<E, N : BinaryTree<E,N>.Node>(var rootNode: N? = null) 
 
     abstract fun remove(value : E) : N?
     abstract fun remove(node : N) : N
-    open fun removeAll(value: E): List<N> {
+    fun removeAll(value: E): List<N> {
         val removedNodes: MutableList<N> = mutableListOf()
         var removedNode: N?
-        while (remove(value).also { removedNode = it } != null) {
+        while (remove(value).also{removedNode = it} != null) {
             removedNodes.add(removedNode!!)
         }
         return removedNodes
