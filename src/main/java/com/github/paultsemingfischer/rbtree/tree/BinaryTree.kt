@@ -3,6 +3,14 @@ abstract class BinaryTree<E, N : BinaryTree<E,N>.Node>(var rootNode: N? = null) 
 
     abstract fun add(node : N) : N
 
+    /* Adds the nodes to the tree in the order of the List
+    Precondition: List has at least 1 element */
+    open fun addAll(nodesToAdd: List<N>){
+        for(node in nodesToAdd){
+            add(node)
+        }
+    }
+
     abstract fun remove(value : E) : N?
     abstract fun remove(node : N) : N
     fun removeAll(value: E): List<N> {
