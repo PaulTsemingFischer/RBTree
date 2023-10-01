@@ -1,6 +1,29 @@
 package com.github.paultsemingfischer.rbtree.tree
 
 class BinarySearchTree<E : Comparable<E>, N : BinarySearchTree<E,N>.BSTNode>(rootNode: N? = null) : BinaryTree<E, N>(rootNode) {
+
+    //Precondition: list can not contain null values
+    //Postcondition: if the list is sorted, the resulting binary tree will be perfectly balanced(as all things should be)
+    constructor(inputList: List<N>) : this() {
+        fun getChild(startIndex : Int, endIndex : Int, parent: N) : N{
+            val currNode = inputList[(endIndex + startIndex)/2]
+
+            if(endIndex - startIndex > 1) {//more than 1 node in the range
+                currNode.parent = parent
+                currNode.left = getChild(startIndex, ((endIndex + startIndex)/2), currNode)
+                currNode.right = getChild((endIndex + startIndex)/2, endIndex, currNode)
+            }
+
+            return currNode
+        }
+
+        rootNode = inputList[inputList.size/2]
+        rootNode!!.left = getChild(0, inputList.size/2, rootNode!!)
+        rootNode!!.right = getChild(inputList.size/2, inputList.size, rootNode!!)
+    }
+
+
+    //Returns added node
     override fun add(node : N) : N {
         //Handle empty tree
         if(rootNode == null) {rootNode = node; return node}
@@ -19,7 +42,7 @@ class BinarySearchTree<E : Comparable<E>, N : BinarySearchTree<E,N>.BSTNode>(roo
             else left = node
             node.parent = this
         }
-        return node;
+        return node
     }
 
     //Returns node removed
@@ -30,7 +53,7 @@ class BinarySearchTree<E : Comparable<E>, N : BinarySearchTree<E,N>.BSTNode>(roo
     override fun remove(node: N): N {
         //They overthrew the king of the wrong kingdom
         //if (!contains(node.data)) return null
-        var currentNode : N = node
+        var currentNode : N
         /* Plot: The king is being overthrown, you will be taking the life of currentNode */
 
         if(node.right == null || node.left == null){ //Does the king have an only child (or no successors)?
@@ -57,12 +80,6 @@ class BinarySearchTree<E : Comparable<E>, N : BinarySearchTree<E,N>.BSTNode>(roo
         }
         return node //Give them the old king to do what they want with
     }
-    private fun min(root: N) : N {
-        var currentNode = root
-        while (currentNode.left != null) currentNode = currentNode.left!!
-        return currentNode
-    }
-
     /*Continued plot from remove... Let's overthrow the king by messing with the kings father (we'll call him god)... You're `newNode`*/
     private fun promote(oldNode: N, newNode: N?){
         //if god exists... otherwise you are god by default
