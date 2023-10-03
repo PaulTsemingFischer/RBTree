@@ -1,49 +1,59 @@
 //TODO: Decide what to do with the allAdd and addAll and fix the horrendous naming
 
 package com.github.paultsemingfischer.rbtree.tree
-open class BinaryTree<E, N : BinaryTree.BTNode<E, N>>(var rootNode: N? = null) {
+open class BinaryTree<E>(private var rootNode: BTNode<E>? = null) {
 
-    open fun add(node : N) : N{
+    fun getRoot() : BTNode<E>?{
+        return rootNode
+    }
+
+    fun setRoot(newRoot : BTNode<E>) {
+        rootNode = newRoot
+    }
+
+
+    open fun add(node : BTNode<E>) : BTNode<E>{
         TODO()
     }
 
 
     /* Adds the nodes to the tree in the order of the List
     Precondition: List has at least 1 element */
-    open fun addAll(nodesToAdd: List<N>){
+    open fun addAll(nodesToAdd: List<BTNode<E>>){
         for(node in nodesToAdd){
             add(node)
         }
     }
 
-    open fun remove(value : E) : N?{
+    open fun remove(value : E) : BTNode<E>?{
         TODO()
     }
 
-    open fun remove(node : N) : N {
+    open fun remove(node : BTNode<E>) : BTNode<E> {
         TODO()
     }
 
-    fun removeAll(value: E): List<N> {
-        val removedNodes: MutableList<N> = mutableListOf()
-        var removedNode: N?
+    fun removeAll(value: E): List<BTNode<E>> {
+        val removedNodes: MutableList<BTNode<E>> = mutableListOf()
+        var removedNode: BTNode<E>?
         while (remove(value).also{removedNode = it} != null) {
             removedNodes.add(removedNode!!)
         }
         return removedNodes
     }
 
-    open class BTNode<E, N : BTNode<E,N>>(
-                       override var data: E,
-                       override var left: N? = null,
-                       override var right: N? = null
-    ) : Node<E, N>{
-        fun isLeaf(): Boolean{
-            return (left == null && right == null)
-        }
+    open class BTNode<E>(
+        override var data: E,
+        private var left: BTNode<E>? = null,
+        private var right: BTNode<E>? = null
+    ) : Node<E, BTNode<E>>{
 
-        override fun createNode(nodeData: E): BTNode<E, N> {
-            return BTNode(nodeData)
-        }
+        fun isLeaf(): Boolean = (left == null && right == null)
+
+        override fun getLeft(): BTNode<E>? = left
+        override fun getRight(): BTNode<E>? = right
+        override fun setRight(newRight: BTNode<E>?) { right = newRight }
+
+        override fun setLeft(newLeft: BTNode<E>?) { left = newLeft }
     }
 }
