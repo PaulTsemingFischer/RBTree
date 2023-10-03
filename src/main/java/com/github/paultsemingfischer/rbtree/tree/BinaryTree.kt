@@ -1,9 +1,12 @@
 //TODO: Decide what to do with the allAdd and addAll and fix the horrendous naming
 
 package com.github.paultsemingfischer.rbtree.tree
-abstract class BinaryTree<E, N : BinaryTree<E,N>.BTNode>(var rootNode: N? = null) {
+open class BinaryTree<E, N : BinaryTree.BTNode<E, N>>(var rootNode: N? = null) {
 
-    abstract fun add(node : N) : N
+    open fun add(node : N) : N{
+        TODO()
+    }
+
 
     /* Adds the nodes to the tree in the order of the List
     Precondition: List has at least 1 element */
@@ -13,8 +16,13 @@ abstract class BinaryTree<E, N : BinaryTree<E,N>.BTNode>(var rootNode: N? = null
         }
     }
 
-    abstract fun remove(value : E) : N?
-    abstract fun remove(node : N) : N
+    open fun remove(value : E) : N?{
+        TODO()
+    }
+
+    open fun remove(node : N) : N {
+        TODO()
+    }
 
     fun removeAll(value: E): List<N> {
         val removedNodes: MutableList<N> = mutableListOf()
@@ -25,16 +33,16 @@ abstract class BinaryTree<E, N : BinaryTree<E,N>.BTNode>(var rootNode: N? = null
         return removedNodes
     }
 
-    open inner class BTNode(
+    open class BTNode<E, N : BTNode<E,N>>(
                        override var data: E,
-                       override var left: BTNode? = null,
-                       override var right: BTNode? = null
-    ) : Node<E,BTNode>{
+                       override var left: N? = null,
+                       override var right: N? = null
+    ) : Node<E, N>{
         fun isLeaf(): Boolean{
             return (left == null && right == null)
         }
 
-        override fun createNode(nodeData: E): BTNode {
+        override fun createNode(nodeData: E): BTNode<E, N> {
             return BTNode(nodeData)
         }
     }

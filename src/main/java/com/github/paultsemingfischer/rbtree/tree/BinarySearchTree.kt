@@ -1,6 +1,6 @@
 package com.github.paultsemingfischer.rbtree.tree
 
-class BinarySearchTree<E : Comparable<E>, N : BinarySearchTree<E,N>.BSTNode>(rootNode: N? = null) : BinaryTree<E, N>(rootNode) {
+class BinarySearchTree<E : Comparable<E>, N : BinarySearchTree.BSTNode<E, N>>(rootNode: N? = null) : BinaryTree<E, N>(rootNode) {
 
     //Precondition: list can not contain null values
     //Postcondition: if the list is sorted, the resulting binary tree will be perfectly balanced(as all things should be)
@@ -22,8 +22,8 @@ class BinarySearchTree<E : Comparable<E>, N : BinarySearchTree<E,N>.BSTNode>(roo
         rootNode!!.right = getChild(inputList.size/2, inputList.size, rootNode!!)
     }
 
-    fun add(element : E, NodeType : N) : N {
-        return add(NodeType.createNode(element) as N) //will this work??
+    fun add(element : E) : N {
+        return BSTNode<E,N>(element, null) as N //will this work?? hopefully
     }
 
 
@@ -123,13 +123,13 @@ class BinarySearchTree<E : Comparable<E>, N : BinarySearchTree<E,N>.BSTNode>(roo
     }
 
 
-    open inner class BSTNode(
-                             override var data : E,
-                             var parent: BSTNode?,
-                             override var left: BSTNode? = null,
-                             override var right: BSTNode? = null
+    open class BSTNode<E : Comparable<E>, N : BSTNode<E, N>>(
+        override var data : E,
+        var parent: BSTNode<E, N>?,
+        override var left: N? = null,
+        override var right: N? = null
     )
-        : Node<E, BSTNode>, Comparable<N> {
+        : BTNode<E, N>(data, left, right), Comparable<N> {
 
         fun isLeftChild() : Boolean { return parent?.left == this }
 
@@ -139,7 +139,7 @@ class BinarySearchTree<E : Comparable<E>, N : BinarySearchTree<E,N>.BSTNode>(roo
             return data.compareTo(other.data)
         }
 
-        override fun createNode(nodeData: E): BSTNode {
+        override fun createNode(nodeData: E): BSTNode<E, N> {
             return BSTNode(nodeData, null)
         }
     }
