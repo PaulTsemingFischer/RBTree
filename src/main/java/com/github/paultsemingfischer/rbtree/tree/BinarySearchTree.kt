@@ -1,8 +1,8 @@
 package com.github.paultsemingfischer.rbtree.tree
 
-class BinarySearchTree<E : Comparable<E>>(private var rootNode: BSTNode<E>? = null) : BinaryTree<E>(rootNode) {
+class BinarySearchTree<E : Comparable<E>>(private var rootNode: BSTNode<E>? = null) : BinaryTree<E, BinarySearchTree.BSTNode<E>>(rootNode) {
     //Precondition: list can not contain null values
-    //Postcondition: if the list is sorted, the resulting binary tree will be perfectly balanced(as all things should be)
+    //Post-condition: if the list is sorted, the resulting binary tree will be perfectly balanced(as all things should be)
     constructor(inputList: List<E>) : this() {
         fun getChild(startIndex : Int, endIndex : Int, parent: BSTNode<E>) : BSTNode<E>{
             val currNode = BSTNode(inputList[(endIndex + startIndex)/2], null)
@@ -21,10 +21,10 @@ class BinarySearchTree<E : Comparable<E>>(private var rootNode: BSTNode<E>? = nu
         rootNode!!.setRight(getChild(inputList.size/2, inputList.size, rootNode!!))
     }
 
-    fun add(element : E) : BSTNode<E> = add(BSTNode(element, null)) //will this work?? hopefully
+    override fun add(element : E) : BSTNode<E> = add(BSTNode(element, null)) //will this work?? hopefully
 
     //Returns added node
-    fun add(node : BSTNode<E>) : BSTNode<E> {
+    override fun add(node : BSTNode<E>) : BSTNode<E> {
         //Handle empty tree
         if(rootNode == null) {rootNode = node; return node}
 
@@ -45,12 +45,22 @@ class BinarySearchTree<E : Comparable<E>>(private var rootNode: BSTNode<E>? = nu
         return node
     }
 
+    override fun addAll(inputList: List<E>): List<BSTNode<E>> {
+        val addedNodes = ArrayList<BSTNode<E>>()
+        for(element in inputList){
+            var myNode : BSTNode<E>
+            add(BSTNode(element, null).also { myNode = it })
+            addedNodes.add(myNode)
+        }
+        return addedNodes
+    }
+
     //Returns node removed
     override fun remove(value: E): BSTNode<E>? {
         val removedNode = findNodeOrNull(value) ?: return null
         return remove(removedNode)
     }
-    override fun remove(inputNode: BTNode<E>): BSTNode<E> {
+    override fun remove(inputNode: BSTNode<E>): BSTNode<E> {
         val node = inputNode as BSTNode<E>
         //They overthrew the king of the wrong kingdom
         //if (!contains(node.data)) return null
@@ -121,11 +131,11 @@ class BinarySearchTree<E : Comparable<E>>(private var rootNode: BSTNode<E>? = nu
         private var parent: BSTNode<E>?,
         private var left: BSTNode<E>? = null,
         private var right: BSTNode<E>? = null
-    ) : BTNode<E>(data, left, right), Comparable<BSTNode<E>> {
+    ) : BinaryTree.BTNode<E>(data, left, right), Comparable<BSTNode<E>> {
         override fun getLeft(): BSTNode<E>? = super.getLeft() as BSTNode<E>?
         override fun getRight(): BSTNode<E>? = super.getRight() as BSTNode<E>?
-        override fun setLeft(newLeft: BTNode<E>?) = super.setLeft(newLeft as BSTNode<E>?)
-        override fun setRight(newRight: BTNode<E>?) = super.setRight(newRight as BSTNode<E>?)
+        override fun setLeft(newLeft: BinaryTree.BTNode<E>?) = super.setLeft(newLeft as BSTNode<E>?)
+        override fun setRight(newRight: BinaryTree.BTNode<E>?) = super.setRight(newRight as BSTNode<E>?)
         fun getParent() : BSTNode<E>? = parent
         fun setParent(newParent : BSTNode<E>) { parent = newParent }
 

@@ -1,41 +1,26 @@
-//TODO: Decide what to do with the allAdd and addAll and fix the horrendous naming
-
 package com.github.paultsemingfischer.rbtree.tree
-open class BinaryTree<E>(private var rootNode: BTNode<E>? = null) {
 
-    fun getRoot() : BTNode<E>?{
-        return rootNode
-    }
+abstract class BinaryTree<E, N : BinaryTree.BTNode<E>>(private var rootNode: N? = null) {
+    fun getRoot() : N? = rootNode
+    fun setRoot(newRoot : N) { rootNode = newRoot }
 
-    fun setRoot(newRoot : BTNode<E>) {
-        rootNode = newRoot
-    }
-
-
-    open fun add(node : BTNode<E>) : BTNode<E>{
-        TODO()
-    }
-
+    abstract fun add(element : E) : N
+    abstract fun add(node : N) : N
+    abstract fun addAll(inputList: List<E>) : List<N>
 
     /* Adds the nodes to the tree in the order of the List
     Precondition: List has at least 1 element */
-    open fun addAll(nodesToAdd: List<BTNode<E>>){
+    open fun addAll(nodesToAdd: List<N>){
         for(node in nodesToAdd){
             add(node)
         }
     }
 
-    open fun remove(value : E) : BTNode<E>?{
-        TODO()
-    }
-
-    open fun remove(node : BTNode<E>) : BTNode<E> {
-        TODO()
-    }
-
-    fun removeAll(value: E): List<BTNode<E>> {
-        val removedNodes: MutableList<BTNode<E>> = mutableListOf()
-        var removedNode: BTNode<E>?
+    abstract fun remove(value : E) : N?
+    abstract fun remove(inputNode : N) : N
+    fun removeAll(value: E): List<N> {
+        val removedNodes: MutableList<N> = mutableListOf()
+        var removedNode: N?
         while (remove(value).also{removedNode = it} != null) {
             removedNodes.add(removedNode!!)
         }
@@ -47,7 +32,6 @@ open class BinaryTree<E>(private var rootNode: BTNode<E>? = null) {
         private var left: BTNode<E>? = null,
         private var right: BTNode<E>? = null
     ) : Node<E, BTNode<E>>{
-
         fun isLeaf(): Boolean = (left == null && right == null)
 
         override fun getLeft(): BTNode<E>? = left
