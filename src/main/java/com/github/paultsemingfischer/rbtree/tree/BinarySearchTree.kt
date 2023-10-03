@@ -22,6 +22,11 @@ class BinarySearchTree<E : Comparable<E>, N : BinarySearchTree<E,N>.BSTNode>(roo
         rootNode!!.right = getChild(inputList.size/2, inputList.size, rootNode!!)
     }
 
+    fun add(element : E, NodeType : N) : N {
+        return add(NodeType.createNode(element) as N) //will this work??
+    }
+
+
 
     //Returns added node
     override fun add(node : N) : N {
@@ -118,8 +123,13 @@ class BinarySearchTree<E : Comparable<E>, N : BinarySearchTree<E,N>.BSTNode>(roo
     }
 
 
-    inner class BSTNode(data: E, var parent: N?, left: N? = null, right: N? = null)
-        : BinaryTree<E, N>.Node(data, left, right), Comparable<N> {
+    open inner class BSTNode(
+                             override var data : E,
+                             var parent: BSTNode?,
+                             override var left: BSTNode? = null,
+                             override var right: BSTNode? = null
+    )
+        : Node<E, BSTNode>, Comparable<N> {
 
         fun isLeftChild() : Boolean { return parent?.left == this }
 
@@ -127,6 +137,10 @@ class BinarySearchTree<E : Comparable<E>, N : BinarySearchTree<E,N>.BSTNode>(roo
 
         override fun compareTo(other: N): Int{
             return data.compareTo(other.data)
+        }
+
+        override fun createNode(nodeData: E): BSTNode {
+            return BSTNode(nodeData, null)
         }
     }
 }

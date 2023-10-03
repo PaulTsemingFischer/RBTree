@@ -1,7 +1,7 @@
 //TODO: Decide what to do with the allAdd and addAll and fix the horrendous naming
 
 package com.github.paultsemingfischer.rbtree.tree
-abstract class BinaryTree<E, N : BinaryTree<E,N>.Node>(var rootNode: N? = null) {
+abstract class BinaryTree<E, N : BinaryTree<E,N>.BTNode>(var rootNode: N? = null) {
 
     abstract fun add(node : N) : N
 
@@ -25,9 +25,17 @@ abstract class BinaryTree<E, N : BinaryTree<E,N>.Node>(var rootNode: N? = null) 
         return removedNodes
     }
 
-    abstract inner class Node(var data: E, var left: N?, var right: N?){
-        open fun isLeaf(): Boolean{
+    open inner class BTNode(
+                       override var data: E,
+                       override var left: BTNode? = null,
+                       override var right: BTNode? = null
+    ) : Node<E,BTNode>{
+        fun isLeaf(): Boolean{
             return (left == null && right == null)
+        }
+
+        override fun createNode(nodeData: E): BTNode {
+            return BTNode(nodeData)
         }
     }
 }
