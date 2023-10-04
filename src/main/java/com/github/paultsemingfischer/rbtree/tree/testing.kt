@@ -10,9 +10,9 @@ fun main() {
 }
 
 
-fun printTree(tree : BinarySearchTree<Int>) {
+fun<E : Comparable<E>> printTree(tree : BinarySearchTree<E>) {
     //Pair consists of the node and it's level in the tree
-    val nodes: ArrayList<Pair<BinarySearchTree.BSTNode<Int>?, Int>> = ArrayList()
+    val nodes: ArrayList<Pair<BinarySearchTree.BSTNode<E>?, Int>> = ArrayList()
     storeAllNodes(tree.getRoot(), 0, nodes)
     nodes.sortBy {it.second}
 
@@ -25,7 +25,7 @@ fun printTree(tree : BinarySearchTree<Int>) {
         print("${i.first}   ")
     }
 }
-private fun storeAllNodes(node: BinarySearchTree.BSTNode<Int>?, level: Int = 0, storage: ArrayList<Pair<BinarySearchTree.BSTNode<Int>?, Int>>): ArrayList<Pair<BinarySearchTree.BSTNode<Int>?, Int>> {
+private fun<E : Comparable<E>> storeAllNodes(node: BinarySearchTree.BSTNode<E>?, level: Int = 0, storage: ArrayList<Pair<BinarySearchTree.BSTNode<E>?, Int>>): ArrayList<Pair<BinarySearchTree.BSTNode<E>?, Int>> {
     storage.add(Pair(node, level))
     if(node?.getLeft() != null) {
         storeAllNodes(node.getLeft()!!, level + 1, storage)
