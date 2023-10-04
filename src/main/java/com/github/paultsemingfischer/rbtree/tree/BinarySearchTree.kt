@@ -1,24 +1,23 @@
 package com.github.paultsemingfischer.rbtree.tree
 
-class BinarySearchTree<E : Comparable<E>>(private var rootNode: BSTNode<E>? = null) : BinaryTree<E, BinarySearchTree.BSTNode<E>>(rootNode) {
+class BinarySearchTree<E : Comparable<E>>(rootNode: BSTNode<E>? = null) : BinaryTree<E, BinarySearchTree.BSTNode<E>>(rootNode) {
     //Precondition: list can not contain null values
     //Post-condition: if the list is sorted, the resulting binary tree will be perfectly balanced(as all things should be)
     constructor(inputList: List<E>) : this() {
-        fun getChild(startIndex : Int, endIndex : Int, parent: BSTNode<E>) : BSTNode<E>{
-            val currNode = BSTNode(inputList[(endIndex + startIndex)/2], null)
-
-            if(endIndex - startIndex > 1) {//more than 1 node in the range
-                currNode.setParent(parent)
-                currNode.setLeft(getChild(startIndex, ((endIndex + startIndex)/2), currNode))
-                currNode.setRight(getChild((endIndex + startIndex)/2, endIndex, currNode))
+        fun setChildren(startIndex: Int, endIndex: Int): BSTNode<E>? {
+            if (startIndex > endIndex) { //middle index in previous call was 0 meaning that your leaf node has been added... therefore
+                return null //it has no children
             }
 
-            return currNode
-        }
+            val middleIndex = (startIndex + endIndex) / 2 //middle of all nodes startIndex to endIndex inclusive on both sides
+            val child = BSTNode(inputList[middleIndex], null) //make our parent node the middle
 
-        rootNode = BSTNode(inputList[inputList.size/2], null)
-        rootNode!!.setLeft(getChild(0, inputList.size/2, rootNode!!))
-        rootNode!!.setRight(getChild(inputList.size/2, inputList.size, rootNode!!))
+            child.setLeft(setChildren(startIndex, middleIndex - 1).also { it?.setParent(child) }) //set the children on the left from beginning up until but not including us (this is inclusive because we use end index in our middle index calculation
+            child.setRight(setChildren(middleIndex + 1, endIndex).also { it?.setParent(child) }) //set the children on the right from the one right of the middle until the end (this is also inclusive because we use end index in the middle index calculation
+
+            return child //return the node added which will return the parent of the subtree of children you created
+        }
+        setRoot(setChildren(0, inputList.size - 1))//set the children of your subtree which in this case is the whole tree
     }
 
     override fun add(element : E) : BSTNode<E> = add(BSTNode(element, null)) //will this work?? hopefully
@@ -26,10 +25,10 @@ class BinarySearchTree<E : Comparable<E>>(private var rootNode: BSTNode<E>? = nu
     //Returns added node
     override fun add(node : BSTNode<E>) : BSTNode<E> {
         //Handle empty tree
-        if(rootNode == null) {rootNode = node; return node}
+        if(getRoot() == null) {setRoot(node); return node}
 
         //Navigate down tree
-        var next = rootNode
+        var next = getRoot()
         var currentNode : BSTNode<E> = next!!
         while (next != null){
             currentNode = next
@@ -61,35 +60,34 @@ class BinarySearchTree<E : Comparable<E>>(private var rootNode: BSTNode<E>? = nu
         return remove(removedNode)
     }
     override fun remove(inputNode: BSTNode<E>): BSTNode<E> {
-        val node = inputNode as BSTNode<E>
         //They overthrew the king of the wrong kingdom
         //if (!contains(node.data)) return null
         var currentNode : BSTNode<E>
         /* Plot: The king is being overthrown, you will be taking the life of currentNode */
 
-        if(node.getRight() == null || node.getLeft() == null){ //Does the king have an only child (or no successors)?
-            promote(node, node.getLeft() ?: node.getRight()) //The kings only child takes the throne (or everyone is dead)
+        if(inputNode.getRight() == null || inputNode.getLeft() == null){ //Does the king have an only child (or no successors)?
+            promote(inputNode, inputNode.getLeft() ?: inputNode.getRight()) //The kings only child takes the throne (or everyone is dead)
         } else { //There's competition for the throne!!
             //Objective: To become king you want to be the most similar to the old king, but still be better (greater or equal to) than him
 
             //Look at the kings right child; then you become to the leftmost node from there; check if you're the kings right child
-            if(min(node.getRight()!!).also{currentNode = it} == node.getRight()) { //You're the kings right child with no children more similar to the king than you (no left children)
-                promote(node, currentNode) //Become king since you have no child that's a closer match
-                currentNode.setLeft(node.getLeft()!!) //Adopt the old kings left child
+            if(min(inputNode.getRight()!!).also{currentNode = it} == inputNode.getRight()) { //You're the kings right child with no children more similar to the king than you (no left children)
+                promote(inputNode, currentNode) //Become king since you have no child that's a closer match
+                currentNode.setLeft(inputNode.getLeft()!!) //Adopt the old kings left child
             } else {
                 currentNode.getParent()!!.setLeft(currentNode.getRight()) //Donate your right (and only) child to your parent; You must be a free man to become king
-                promote(node, currentNode) //After your child is no longer your responsibility, you ascend the throne
+                promote(inputNode, currentNode) //After your child is no longer your responsibility, you ascend the throne
 
                 /* You need successors: steal the old kings children */
                 //Legally adopt the children of the old king
-                currentNode.setLeft(node.getLeft())
-                currentNode.setRight(node.getRight())
+                currentNode.setLeft(inputNode.getLeft())
+                currentNode.setRight(inputNode.getRight())
                 //Tell them that you're their daddy
-                node.getLeft()?.setParent(currentNode)
-                node.getLeft()?.setParent(currentNode)
+                inputNode.getLeft()?.setParent(currentNode)
+                inputNode.getLeft()?.setParent(currentNode)
             }
         }
-        return node //Give them the old king to do what they want with
+        return inputNode //Give them the old king to do what they want with
     }
     /*Continued plot from remove... Let's overthrow the king by messing with the kings father (we'll call him god)... You're `newNode`*/
     private fun promote(oldNode: BSTNode<E>, newNode: BSTNode<E>?){
@@ -101,7 +99,7 @@ class BinarySearchTree<E : Comparable<E>>(private var rootNode: BSTNode<E>? = nu
                 oldNode.getParent()!!.setRight(newNode) //steal the right chair and sit in it to make yourself king!!!
             }
         } else { //god doesn't exist... time to change that
-            rootNode = newNode //welcome to godhood
+            setRoot(newNode) //welcome to godhood
         }
     }
     fun min(root: BSTNode<E>) : BSTNode<E> {
@@ -116,7 +114,7 @@ class BinarySearchTree<E : Comparable<E>>(private var rootNode: BSTNode<E>? = nu
     }
 
     fun findNodeOrNull(value : E) : BSTNode<E>? {
-        var currentNode = rootNode
+        var currentNode = getRoot()
         while (currentNode != null){
             if(currentNode.data == value) return currentNode
             currentNode = if(value >= currentNode.data) currentNode.getRight() else currentNode.getLeft()

@@ -2,7 +2,7 @@ package com.github.paultsemingfischer.rbtree.tree
 
 abstract class BinaryTree<E, N : BinaryTree.BTNode<E>>(private var rootNode: N? = null) {
     fun getRoot() : N? = rootNode
-    fun setRoot(newRoot : N) { rootNode = newRoot }
+    fun setRoot(newRoot : N?) { rootNode = newRoot }
 
     abstract fun add(element : E) : N
     abstract fun add(node : N) : N
@@ -39,5 +39,9 @@ abstract class BinaryTree<E, N : BinaryTree.BTNode<E>>(private var rootNode: N? 
         override fun setRight(newRight: BTNode<E>?) { right = newRight }
 
         override fun setLeft(newLeft: BTNode<E>?) { left = newLeft }
+
+        override fun toString() : String{
+            return "[$data]"
+        }
     }
 }
