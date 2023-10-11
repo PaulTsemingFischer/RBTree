@@ -1,23 +1,21 @@
 package com.github.paultsemingfischer.rbtree.tree
 
-abstract class BinaryTree<E, N : BinaryTree.BTNode<E>>(private var rootNode: N? = null) {
-    fun getRoot() : N? = rootNode
-    fun setRoot(newRoot : N?) { rootNode = newRoot }
-
+abstract class BinaryTree<E, N : BinaryTree.BTNode<E>> {
+    open var rootNode: N? = null
     abstract fun add(element : E) : N
-    abstract fun add(node : N) : N
-    abstract fun addAll(inputList: List<E>) : List<N>
+    protected abstract fun add(node : N) : N
+    abstract fun addAll(inputList: List<E>)
 
     /* Adds the nodes to the tree in the order of the List
     Precondition: List has at least 1 element */
-    open fun addAll(nodesToAdd: List<N>){
+    protected fun addAll(nodesToAdd: List<N>){
         for(node in nodesToAdd){
             add(node)
         }
     }
 
     abstract fun remove(value : E) : N?
-    abstract fun remove(inputNode : N) : N
+    protected abstract fun remove(inputNode : N) : N
     fun removeAll(value: E): List<N> {
         val removedNodes: MutableList<N> = mutableListOf()
         var removedNode: N?
@@ -37,7 +35,6 @@ abstract class BinaryTree<E, N : BinaryTree.BTNode<E>>(private var rootNode: N? 
         override fun getLeft(): BTNode<E>? = left
         override fun getRight(): BTNode<E>? = right
         override fun setRight(newRight: BTNode<E>?) { right = newRight }
-
         override fun setLeft(newLeft: BTNode<E>?) { left = newLeft }
 
         override fun toString() : String{
