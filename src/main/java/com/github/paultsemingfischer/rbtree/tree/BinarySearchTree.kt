@@ -1,10 +1,6 @@
 package com.github.paultsemingfischer.rbtree.tree
 
 open class BinarySearchTree<E : Comparable<E>>() : BinaryTree<E, BinarySearchTree.BSTNode<E>>() {
-    override var rootNode: BSTNode<E>?
-        get() = super.rootNode
-        set(value) {}
-
     //Precondition: list can not contain null values
     //Post-condition: if the list is sorted, the resulting binary tree will be perfectly balanced(as all things should be)
     constructor(inputList: List<E>) : this() {
@@ -16,8 +12,8 @@ open class BinarySearchTree<E : Comparable<E>>() : BinaryTree<E, BinarySearchTre
             val middleIndex = (startIndex + endIndex) / 2 //middle of all nodes startIndex to endIndex inclusive on both sides
             val child = BSTNode(inputList[middleIndex], null) //make our parent node the middle
 
-            child.setLeft(setChildren(startIndex, middleIndex - 1).also { it?.setParent(child) }) //set the children on the left from beginning up until but not including us (this is inclusive because we use end index in our middle index calculation
-            child.setRight(setChildren(middleIndex + 1, endIndex).also { it?.setParent(child) }) //set the children on the right from the one right of the middle until the end (this is also inclusive because we use end index in the middle index calculation
+            child.reassignLeft(setChildren(startIndex, middleIndex - 1)) //set the children on the left from beginning up until but not including us (this is inclusive because we use end index in our middle index calculation
+            child.reassignRight(setChildren(middleIndex + 1, endIndex)) //set the children on the right from the one right of the middle until the end (this is also inclusive because we use end index in the middle index calculation
 
             return child //return the node added which will return the parent of the subtree of children you created
         }
@@ -45,9 +41,9 @@ open class BinarySearchTree<E : Comparable<E>>() : BinaryTree<E, BinarySearchTre
 
         //Add node at our determined location
         currentNode.run {  //some pretty cool syntax I came across
-            if (node.data >= data) setRight(node)
-            else setLeft(node)
-            node.setParent(this)
+            if (node.data >= data) right = node
+            else left = node
+            node.parent = this
         }
         return node
     }
@@ -81,18 +77,15 @@ open class BinarySearchTree<E : Comparable<E>>() : BinaryTree<E, BinarySearchTre
             //Look at the kings right child; then you become to the leftmost node from there; check if you're the kings right child
             if(min(inputNode.getRight()!!).also{currentNode = it} == inputNode.getRight()) { //You're the kings right child with no children more similar to the king than you (no left children)
                 promote(inputNode, currentNode) //Become king since you have no child that's a closer match
-                currentNode.setLeft(inputNode.getLeft()!!) //Adopt the old kings left child
+                currentNode.left = inputNode.getLeft()!! //Adopt the old kings left child
             } else {
-                currentNode.getParent()!!.setLeft(currentNode.getRight()) //Donate your right (and only) child to your parent; You must be a free man to become king
+                currentNode.parent?.left = currentNode.getRight() //Donate your right (and only) child to your parent; You must be a free man to become king
                 promote(inputNode, currentNode) //After your child is no longer your responsibility, you ascend the throne
 
                 /* You need successors: steal the old kings children */
-                //Legally adopt the children of the old king
-                currentNode.setLeft(inputNode.getLeft())
-                currentNode.setRight(inputNode.getRight())
-                //Tell them that you're their daddy
-                inputNode.getLeft()?.setParent(currentNode)
-                inputNode.getLeft()?.setParent(currentNode)
+                //Legally adopt the children of the old king & tell them that you're their daddy
+                currentNode.reassignLeft(inputNode.getLeft())
+                currentNode.reassignRight(inputNode.getRight())
             }
         }
         return inputNode //Give them the old king to do what they want with
@@ -100,11 +93,11 @@ open class BinarySearchTree<E : Comparable<E>>() : BinaryTree<E, BinarySearchTre
     /*Continued plot from remove... Let's overthrow the king by messing with the kings father (we'll call him god)... You're `newNode`*/
     private fun promote(oldNode: BSTNode<E>, newNode: BSTNode<E>?){
         //if god exists... otherwise you are god by default
-        if(oldNode.getParent() != null) {
+        if(oldNode.parent != null) {
             if (oldNode.isLeftChild()) { //if the king is seated at the left hand of the father
-                oldNode.getParent()!!.setLeft(newNode) //steal the left chair and sit in it to make yourself king!!!
+                oldNode.parent?.left = newNode //steal the left chair and sit in it to make yourself king!!!
             } else { //if the king is seated at the right hand of the father
-                oldNode.getParent()!!.setRight(newNode) //steal the right chair and sit in it to make yourself king!!!
+                oldNode.parent?.right = newNode //steal the right chair and sit in it to make yourself king!!!
             }
         } else { //god doesn't exist... time to change that
             rootNode = newNode //welcome to godhood
@@ -137,13 +130,19 @@ open class BinarySearchTree<E : Comparable<E>>() : BinaryTree<E, BinarySearchTre
         var parent: BSTNode<E>?,
         left: BSTNode<E>? = null,
         right: BSTNode<E>? = null
-    ) : BTNode<E>(data, left, right), Comparable<BSTNode<E>> {
-        override fun getLeft(): BSTNode<E>? = super.getLeft() as BSTNode<E>?
-        override fun getRight(): BSTNode<E>? = super.getRight() as BSTNode<E>?
-        override fun setLeft(newLeft: BTNode<E>?) = super.setLeft(newLeft as BSTNode<E>?)
-        override fun setRight(newRight: BTNode<E>?) = super.setRight(newRight as BSTNode<E>?)
-        open fun getParent() : BSTNode<E>? = parent
-        open fun setParent(newParent : BSTNode<E>?) { parent = newParent }
+    ) : BTNode<E>(data, left, right), Comparable<BSTNode<E>>{
+
+        open fun getRight(): BSTNode<E>? = this.right as BSTNode?
+        open fun getLeft(): BSTNode<E>? = this.left as BSTNode?
+
+        fun reassignLeft(newLeft: BTNode<E>?) {
+            left = newLeft as BSTNode?
+            newLeft?.parent = this
+        }
+        fun reassignRight(newRight: BTNode<E>?) {
+            right = newRight as BSTNode?
+            newRight?.parent = this
+        }
 
         fun isLeftChild() : Boolean { return parent?.getLeft() == this }
         fun isRightChild() : Boolean { return parent?.getRight() == this }
