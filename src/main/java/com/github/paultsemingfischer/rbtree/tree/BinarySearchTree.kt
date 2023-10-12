@@ -133,8 +133,8 @@ open class BinarySearchTree<E : Comparable<E>>() : BinaryTree<E, BinarySearchTre
     fun contains(value : E) : Boolean { return findNodeOrNull(value) != null }
 
     open class BSTNode<E : Comparable<E>>(
-        override var data : E,
-        private var parent: BSTNode<E>?,
+        data : E,
+        var parent: BSTNode<E>?,
         left: BSTNode<E>? = null,
         right: BSTNode<E>? = null
     ) : BTNode<E>(data, left, right), Comparable<BSTNode<E>> {

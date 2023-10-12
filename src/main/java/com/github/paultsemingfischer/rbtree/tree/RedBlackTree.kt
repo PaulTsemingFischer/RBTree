@@ -6,7 +6,7 @@ class RedBlackTree<E : Comparable<E>>(inputList: List<E> = emptyList()) : Binary
         set(value) {value as RBNode<E>?}
     constructor(root : E) : this(listOf(root))
 
-    override fun add(element : E) : BSTNode<E> = add(RBNode(element, null)) //will return RBNode subtype
+    override fun add(element : E) : RBNode<E> = add(RBNode(element, null)) as RBNode
 
     override fun addAll(inputList: List<E>){
         //val addedNodes = ArrayList<BSTNode<E>>()
@@ -18,12 +18,20 @@ class RedBlackTree<E : Comparable<E>>(inputList: List<E> = emptyList()) : Binary
         //return addedNodes
     }
 
-    //Precondition: startNode has a right child
-    private fun rotateLeft(startNode: RBNode<E>){
-        var currNode = startNode.getRight()!! //Set current node to right child
-        startNode.setRight(currNode.getLeft()) //Swaps current node's right child to beta(middle)
-
-
+    //Precondition: 👑 has a 🤴(right child)
+    private fun rotateLeft(`👑`: RBNode<E>){
+        val `🤴` = `👑`.getRight()!!
+        `👑`.reassignRight(`🤴`.getLeft())
+        `🤴`.reassignLeft(`👑`)
+        if(`👑`.parent == null) {
+            `🤴`.parent = null
+            rootNode = `🤴`
+        }
+        else{
+            if(`👑`.isLeftChild())
+                `👑`.parent!!.reassignLeft(`🤴`)
+            else `👑`.parent!!.reassignRight(`🤴`)
+        }
     }
 
     open class RBNode<E : Comparable<E>>(
