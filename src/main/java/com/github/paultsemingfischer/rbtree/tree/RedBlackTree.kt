@@ -13,33 +13,31 @@ class RedBlackTree<E : Comparable<E>>(inputList: List<E> = emptyList()) : Binary
         return addedNode
     }
 
-    private fun insertFixUp(n : RBNode<E>){
-        var node = n
-        if(node == rootNode){
-            node.color = RBNode.RBColor.BLACK
-            return
-        }
-        while (node.getParent()?.color == RBNode.RBColor.RED){ //While parent is red
-            if(node.getParent()!!.isLeftChild()){ //If parent is left child
-                val uncle = node.getParent(2)?.getRight()
-                if (uncle != null && uncle.color == RBNode.RBColor.RED) { //case 1: uncle is red
-                    uncle.color = RBNode.RBColor.BLACK //set uncle to black
-                    node = node. //set node to grandparent
-                    getParent()!!.also{it.color = RBNode.RBColor.BLACK}. //as we're accessing parent, set it's color to black
-                    getParent()!!.also{it.color = RBNode.RBColor.BLACK} //as we're accessing grandparent, set it's color to black
-                } else {//case 2+3: uncle is black or null
-                    node.run {
-                        if (isRightChild()) {//case 2: you are right child
-                            node = getParent()!!
-                            parent = node.getParent()!!
-                            rotateLeft(node)
-                        }
-                        //case 3: you are left child
-                        getParent()!!.color = RBNode.RBColor.BLACK
-                        getParent(2)!!.color = RBNode.RBColor.RED
-                        rotateRight(getParent(2)!!)
-                    }
+    private fun insertFixUp(node : RBNode<E>){
+        //we can directly access parent if there's no need to access RB specific properties like color
+        var you = node
+        if(you.parent == null) {you.color = RBNode.RBColor.BLACK; return} //you are root
+
+        while (you.getParent()?.color == RBNode.RBColor.RED){ //While parent is red
+            var dad = you.getParent()!!
+            val grandpa = dad.getParent()!!
+
+            val uncle = if(dad.isRightChild()) grandpa.getRight() else grandpa.getLeft()
+            //If parent is left child
+            if (uncle?.color == RBNode.RBColor.RED) { //case 1: uncle is red if null it will return false which is fine because nodes that don't exist are treated as black
+                uncle.color = RBNode.RBColor.BLACK //set uncle to black
+                dad.color = RBNode.RBColor.BLACK
+                grandpa.color = RBNode.RBColor.RED
+                you = grandpa
+            } else {//case 2+3: uncle is black or null
+                if(dad.isRightChild() xor you.isRightChild()){ //true if you are on the opposite side of your dad
+                    you = dad.also{dad = you}
+                    if(dad.isRightChild()) rotateLeft(you) else rotateRight(you) //rotates you the opposite side of your dad
                 }
+                //case 3: you are left child
+                dad.color = RBNode.RBColor.BLACK
+                grandpa.color = RBNode.RBColor.RED
+                if(dad.isRightChild()) rotateRight(grandpa) else rotateLeft(grandpa)
             }
         }
     }
