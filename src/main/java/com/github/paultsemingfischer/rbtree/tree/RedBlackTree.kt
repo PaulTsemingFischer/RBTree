@@ -7,7 +7,42 @@ class RedBlackTree<E : Comparable<E>>(inputList: List<E> = emptyList()) : Binary
 
     constructor(root : E) : this(listOf(root))
 
-    override fun add(element : E) : RBNode<E> = add(RBNode(element, null)) as RBNode
+    override fun add(element : E) : RBNode<E> {
+        val addedNode = add(RBNode(element, null)) as RBNode
+        insertFixUp(addedNode)
+        return addedNode
+    }
+
+    private fun insertFixUp(n : RBNode<E>){
+        var node = n
+        if(node == rootNode){
+            node.color = RBNode.RBColor.BLACK
+            return
+        }
+        while (node.getParent()?.color == RBNode.RBColor.RED){ //While parent is red
+            if(node.getParent()!!.isLeftChild()){ //If parent is left child
+                val uncle = node.getParent(2)?.getRight()
+                if (uncle != null && uncle.color == RBNode.RBColor.RED) { //case 1: uncle is red
+                    uncle.color = RBNode.RBColor.BLACK //set uncle to black
+                    node = node. //set node to grandparent
+                    getParent()!!.also{it.color = RBNode.RBColor.BLACK}. //as we're accessing parent, set it's color to black
+                    getParent()!!.also{it.color = RBNode.RBColor.BLACK} //as we're accessing grandparent, set it's color to black
+                } else {//case 2+3: uncle is black or null
+                    node.run {
+                        if (isRightChild()) {//case 2: you are right child
+                            node = getParent()!!
+                            parent = node.getParent()!!
+                            rotateLeft(node)
+                        }
+                        //case 3: you are left child
+                        getParent()!!.color = RBNode.RBColor.BLACK
+                        getParent(2)!!.color = RBNode.RBColor.RED
+                        rotateRight(getParent(2)!!)
+                    }
+                }
+            }
+        }
+    }
 
     override fun addAll(inputList: List<E>){
         for(element in inputList){
