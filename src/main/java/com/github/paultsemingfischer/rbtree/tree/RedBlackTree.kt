@@ -57,7 +57,12 @@ class RedBlackTree<E : Comparable<E>>(inputList: List<E> = emptyList()) : Binary
 
         override fun getLeft() : RBNode<E>? = left as RBNode?
         override fun getRight() : RBNode<E>? = right as RBNode?
-        fun getParent() : RBNode<E>? = parent as RBNode?
+        fun getParent(generationsBack: Int = 1) : RBNode<E>? {
+            if(generationsBack == 1){
+                return this.parent as RBNode?
+            }
+            return getParent(generationsBack-1)?.parent as RBNode?
+        }
 
         enum class RBColor {
             RED,
