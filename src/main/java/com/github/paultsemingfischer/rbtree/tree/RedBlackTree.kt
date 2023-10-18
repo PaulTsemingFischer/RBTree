@@ -12,7 +12,6 @@ class RedBlackTree<E : Comparable<E>>(inputList: List<E> = emptyList()) : Binary
     override fun addAll(inputList: List<E>){
         for(element in inputList){
             add(RBNode(element, null))
-
         }
     }
 
