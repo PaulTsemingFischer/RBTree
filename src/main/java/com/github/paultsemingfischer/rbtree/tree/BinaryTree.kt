@@ -2,6 +2,7 @@ package com.github.paultsemingfischer.rbtree.tree
 
  abstract class BinaryTree<E, N : BinaryTree.BTNode<E>> {
     protected open var rootNode: N? = null
+
     abstract fun add(element : E) : N
     protected abstract fun add(node : N) : N
     abstract fun addAll(inputList: List<E>)

@@ -1,9 +1,12 @@
 package com.github.paultsemingfischer.rbtree.tree
 
-class RedBlackTree<E : Comparable<E>>(inputList: List<E> = emptyList()) : BinarySearchTree<E>(inputList) {
-    override var rootNode: BSTNode<E>? //This can't be an RBNode (it's a BSTNode), so we mask it with getter and setter modifications
-        get() = super.rootNode as RBNode<E>?
-        set(value) {value as RBNode?}
+open class RedBlackTree<E : Comparable<E>>(inputList: List<E> = emptyList()) : BinarySearchTree<E>(inputList) {
+    const val RED = "\u001b[31m"
+
+
+    override var rootNode: BSTNode<E>? = null//This can't be an RBNode (it's a BSTNode), so we mask it with getter and setter modifications
+    fun getRoot() = super.rootNode as RBNode<E>?
+    protected fun setRoot(value:RBNode<E>) {rootNode = value}
 
     constructor(root : E) : this(listOf(root))
 
