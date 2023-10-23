@@ -103,6 +103,7 @@ open class RedBlackTree<E : Comparable<E>>(inputList: List<E> = emptyList()) : B
         }
     }
 
+
     open class RBNode<E : Comparable<E>>(
         data : E,
         parent: RBNode<E>?,
@@ -126,4 +127,30 @@ open class RedBlackTree<E : Comparable<E>>(inputList: List<E> = emptyList()) : B
         }
     }
 
+
+    fun printTree() {
+        val nodes: ArrayList<Pair<RBNode<E>, Int>> = ArrayList()
+        storeAllNodes(getRoot()!!, 0, nodes)
+        nodes.sortBy {it.second}
+
+        var prevLevel = 0
+        for (i in nodes) {
+            if(i.second > prevLevel){
+                println()
+                prevLevel = i.second
+            }
+            print("${i.first}   ")
+        }
+    }
+
+    private fun storeAllNodes(node: RBNode<E>, level: Int = 0, storage: ArrayList<Pair<RBNode<E>, Int>>): ArrayList<Pair<RBNode<E>, Int>> {
+        storage.add(Pair(node, level))
+        if(node.getLeft() != null) {
+            storeAllNodes(node.getLeft()!!, level + 1, storage)
+        }
+        if(node.getRight() != null){
+            storeAllNodes(node.getRight()!!, level + 1, storage)
+        }
+        return storage
+    }
 }
