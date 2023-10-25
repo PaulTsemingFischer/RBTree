@@ -1,9 +1,11 @@
 package com.github.paultsemingfischer.rbtree.tree
 
 open class BinarySearchTree<E : Comparable<E>>() : BinaryTree<E, BinarySearchTree.BSTNode<E>>() {
+    //root node is implicitly the correct type here
+
     //Precondition: list can not contain null values
     //Post-condition: if the list is sorted, the resulting binary tree will be perfectly balanced(as all things should be)
-    constructor(inputList: List<E>) : this() {
+    private constructor(inputList: List<E>) : this() {
         fun setChildren(startIndex: Int, endIndex: Int): BSTNode<E>? {
             if (startIndex > endIndex) { //middle index in previous call was 0 meaning that your leaf node has been added... therefore
                 return null //it has no children
@@ -29,7 +31,7 @@ open class BinarySearchTree<E : Comparable<E>>() : BinaryTree<E, BinarySearchTre
     //Returns added node
     override fun add(node : BSTNode<E>) : BSTNode<E> {
         //Handle empty tree
-        if(rootNode == null) {rootNode = node; return node}
+        if(getRoot() == null) {setRoot(node); return node}
 
         //Navigate down tree
         var next = rootNode

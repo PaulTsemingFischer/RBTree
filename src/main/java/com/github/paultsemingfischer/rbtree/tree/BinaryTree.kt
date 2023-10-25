@@ -4,12 +4,14 @@ package com.github.paultsemingfischer.rbtree.tree
     protected open var rootNode: N? = null
 
     abstract fun add(element : E) : N
+    open fun getRoot() : N? = rootNode
+    protected open fun setRoot(root : N?) {rootNode = root}
     protected abstract fun add(node : N) : N
     abstract fun addAll(inputList: List<E>)
 
     /* Adds the nodes to the tree in the order of the List
     Precondition: List has at least 1 element */
-    protected fun addAll(nodesToAdd: List<N>){
+    protected fun addAllNodes(nodesToAdd: List<N>){
         for(node in nodesToAdd){
             add(node)
         }
@@ -34,7 +36,7 @@ package com.github.paultsemingfischer.rbtree.tree
 
         fun isLeaf(): Boolean = (left == null && right == null)
 
-        override fun toString() : String{
+        override fun toString() : String {
             return "[$data]"
         }
     }

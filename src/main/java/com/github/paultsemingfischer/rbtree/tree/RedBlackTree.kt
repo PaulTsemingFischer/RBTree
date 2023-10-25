@@ -1,18 +1,20 @@
 package com.github.paultsemingfischer.rbtree.tree
 
-open class RedBlackTree<E : Comparable<E>>(inputList: List<E> = emptyList()) : BinarySearchTree<E>(inputList) {
-    const val RED = "\u001b[31m"
+import kotlin.math.pow
+import kotlin.text.StringBuilder
 
-
-    override var rootNode: BSTNode<E>? = null//This can't be an RBNode (it's a BSTNode), so we mask it with getter and setter modifications
-    fun getRoot() = super.rootNode as RBNode<E>?
-    protected fun setRoot(value:RBNode<E>) {rootNode = value}
+open class RedBlackTree<E : Comparable<E>>(inputList: List<E> = emptyList()) : BinarySearchTree<E>() {
+    init {
+        addAll(inputList)
+    }
+    override fun getRoot() = super.getRoot() as RBNode? //This says that it overrides the return type but not sure I believe it
+    override fun setRoot(root : BSTNode<E>?) {super.setRoot(root as RBNode?)}
 
     constructor(root : E) : this(listOf(root))
 
     override fun add(element : E) : RBNode<E> {
         val addedNode = add(RBNode(element, null)) as RBNode
-        insertFixUp(addedNode)
+        //insertFixUp(addedNode)
         return addedNode
     }
 
@@ -24,7 +26,7 @@ open class RedBlackTree<E : Comparable<E>>(inputList: List<E> = emptyList()) : B
         if(you.parent == null) {you.color = RBNode.RBColor.BLACK; return}
 
         //If your parent is red then we got a problem because you can't have 2 straight generations go unremembered
-        while (you.getParent()?.color == RBNode.RBColor.RED){
+        while (you.getParent()!!.color == RBNode.RBColor.RED){
             //this is your dad
             var dad = you.getParent()!!
             //this is your dads dad
@@ -68,7 +70,7 @@ open class RedBlackTree<E : Comparable<E>>(inputList: List<E> = emptyList()) : B
 
     override fun addAll(inputList: List<E>){
         for(element in inputList){
-            add(RBNode(element, null))
+            add(element)
         }
     }
 
@@ -125,32 +127,53 @@ open class RedBlackTree<E : Comparable<E>>(inputList: List<E> = emptyList()) : B
             RED,
             BLACK
         }
+
+        override fun toString(): String {
+            return (if(color == RBColor.RED) "\u001b[41m${super.toString()}" else "\u001b[40m${super.toString()}") + "\u001B[0m"
+        }
     }
 
+    //precondition root is not null
+    //could be optimized to keep track of index in level while recurring but this is only for the printing method right now so there's not too much of a point
+    private fun to2dArray(node: RBNode<E>?, arr: ArrayList<Array<RBNode<E>?>>, lvl: Int) : ArrayList<Array<RBNode<E>?>>{
+        if (arr.size == lvl) {
+            arr.add(Array(1 shl lvl) { null })
+        }
 
-    fun printTree() {
-        val nodes: ArrayList<Pair<RBNode<E>, Int>> = ArrayList()
-        storeAllNodes(getRoot()!!, 0, nodes)
-        nodes.sortBy {it.second}
-
-        var prevLevel = 0
-        for (i in nodes) {
-            if(i.second > prevLevel){
-                println()
-                prevLevel = i.second
+        var curPar = node
+        var indexInLvl = 0
+        var curLvl = arr.size - lvl - 1
+        while (curPar != null) {
+            if (curPar.isRightChild()) {
+                indexInLvl += 1 shl curLvl
             }
-            print("${i.first}   ")
+            curPar = curPar.getParent(); curLvl++
         }
+
+
+        arr[lvl][indexInLvl] = node
+
+        if (node != null && (node.getLeft() != null || node.getRight() != null)) {
+            to2dArray(node.getLeft(), arr, lvl + 1)
+            to2dArray(node.getRight(), arr, lvl + 1)
+        }
+        return arr
     }
 
-    private fun storeAllNodes(node: RBNode<E>, level: Int = 0, storage: ArrayList<Pair<RBNode<E>, Int>>): ArrayList<Pair<RBNode<E>, Int>> {
-        storage.add(Pair(node, level))
-        if(node.getLeft() != null) {
-            storeAllNodes(node.getLeft()!!, level + 1, storage)
+    fun print(){
+        val arr = to2dArray(getRoot(), ArrayList(),0 )
+        val len = arr.flatMap {it.asIterable()}.maxBy{it.toString().length}.toString().length-9 //-7 cause dumb colors, stupid way to get the maximum size that a node will be printed at
+        for(r in 0 until arr.size){
+            for(c in 0 until arr[r].size){
+                val node = if(arr[r][c] != null) arr[r][c].toString() else " "//.repeat(len)
+                val spacer = " ".repeat(len)
+                val leadingSpacing = spacer.repeat(1 shl (arr.size-r-1))
+                val middleSpacing = spacer.repeat((1 shl (arr.size-r))-1)
+                val trailingSpacing = " ".repeat(len - (node.length - if(arr[r][c] != null) 9 else 0))
+                print((if(c==0) leadingSpacing else middleSpacing) + node + trailingSpacing)
+            }
+            println()
+            //print(" ".repeat(len).repeat(r)
         }
-        if(node.getRight() != null){
-            storeAllNodes(node.getRight()!!, level + 1, storage)
-        }
-        return storage
     }
 }
