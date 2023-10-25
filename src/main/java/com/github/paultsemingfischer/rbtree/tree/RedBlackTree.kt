@@ -162,18 +162,18 @@ open class RedBlackTree<E : Comparable<E>>(inputList: List<E> = emptyList()) : B
 
     fun print(){
         val arr = to2dArray(getRoot(), ArrayList(),0 )
-        val len = arr.flatMap {it.asIterable()}.maxBy{it.toString().length}.toString().length-9 //-7 cause dumb colors, stupid way to get the maximum size that a node will be printed at
-        for(r in 0 until arr.size){
-            for(c in 0 until arr[r].size){
-                val node = if(arr[r][c] != null) arr[r][c].toString() else " "//.repeat(len)
+        //this is a stupid way to get the maximum size that a node will be printed at, but it works sooo
+        val len = arr.flatMap{it.asIterable()} .maxBy{it.toString().length} .toString().length -9 //-9 cause dumb colors
+        for(lvl in 0 until arr.size){
+            for(indx in 0 until arr[lvl].size){
+                val node = if(arr[lvl][indx] != null) arr[lvl][indx].toString() else "[ ]"
                 val spacer = " ".repeat(len)
-                val leadingSpacing = spacer.repeat(1 shl (arr.size-r-1))
-                val middleSpacing = spacer.repeat((1 shl (arr.size-r))-1)
-                val trailingSpacing = " ".repeat(len - (node.length - if(arr[r][c] != null) 9 else 0))
-                print((if(c==0) leadingSpacing else middleSpacing) + node + trailingSpacing)
+                val leadingSpacing = spacer.repeat(1 shl (arr.size-lvl-1))
+                val middleSpacing = spacer.repeat((1 shl (arr.size-lvl))-1)
+                val trailingSpacing = " ".repeat(len - (node.length - if(arr[lvl][indx] != null) 9 else 0)) //check if we need to ignore color indicators
+                print((if(indx==0) leadingSpacing else middleSpacing) + node + trailingSpacing)
             }
             println()
-            //print(" ".repeat(len).repeat(r)
         }
     }
 }
