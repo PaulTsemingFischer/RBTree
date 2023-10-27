@@ -14,7 +14,7 @@ open class RedBlackTree<E : Comparable<E>>(inputList: List<E> = emptyList()) : B
 
     override fun add(element : E) : RBNode<E> {
         val addedNode = add(RBNode(element, null)) as RBNode
-        //insertFixUp(addedNode)
+        insertFixUp(addedNode)
         return addedNode
     }
 
