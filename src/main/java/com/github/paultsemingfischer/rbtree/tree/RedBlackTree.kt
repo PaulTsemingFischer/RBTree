@@ -19,6 +19,7 @@ open class RedBlackTree<E : Comparable<E>>(inputList: List<E> = emptyList()) : B
     }
 
     private fun insertFixUp(node : RBNode<E>){
+//        println("insertFixUp")
         //Welcome into the world, you are an unimportant red child, already (probably) causing chaos within the kingdom
         var you = node
         //If you were born from nothing, and you have no parents you are the king of the entire realm
