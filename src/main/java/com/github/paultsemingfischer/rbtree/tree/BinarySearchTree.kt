@@ -31,7 +31,7 @@ open class BinarySearchTree<E : Comparable<E>>() : BinaryTree<E, BinarySearchTre
     //Returns added node
     override fun add(node : BSTNode<E>) : BSTNode<E> {
         //Handle empty tree
-        if(getRoot() == null) {setRoot(node); return node}
+        if(getRoot() == null) {println("Setting root"); setRoot(node); return node}
 
         //Navigate down tree
         var next = rootNode
