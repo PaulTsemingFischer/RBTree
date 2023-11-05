@@ -115,7 +115,7 @@ open class RedBlackTree<E : Comparable<E>>(inputList: List<E> = emptyList()) : B
         }
 
         override fun toString(): String {
-            return (if(color == RBColor.RED) "\u001b[41m${super.toString()}" else "\u001b[40m${super.toString()}") + "\u001B[0m"
+            return (if(color == RBColor.RED) "\u001B[41;30m${super.toString()}" else "\u001b[40m${super.toString()}") + "\u001B[0m"
         }
 
         fun recursivePrint(){
