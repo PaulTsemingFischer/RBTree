@@ -19,61 +19,46 @@ open class RedBlackTree<E : Comparable<E>>(inputList: List<E> = emptyList()) : B
 
     private fun insertFixUp(node : RBNode<E>){
 
-        //Welcome into the world, you are an unimportant red child, already (probably) causing chaos within the kingdom
         var you = node
 
-
-        //If your parent is red then we got a problem because you can't have 2 straight generations go unremembered
         while (you.getParent()?.color == RBNode.RBColor.RED){
             println("Insert fixup - You: $you")
             printTree()
             println()
-            //this is your dad
+
             var dad = you.getParent()!!
-            //this is your dads dad
             val grandpa = dad.getParent()!!
-            //this is your uncle; your dads only sibling (hopefully he exists)
             val uncle = if(dad.isRightChild()) grandpa.getLeft() else grandpa.getRight()
 
-            //is your uncle unimportant?
-            //if your uncle doesn't exist... well then he is not red, and would probably be famous if he existed, so we're pretend he is
             if (uncle?.color == RBNode.RBColor.RED) {
                 println("Case 1: Color swap + tp to grandpa  -  Uncle: $uncle is red")
-                //Now lets make him and your dad both to famous so that you and your grandparent can be an unimportant red
+
                 //CASE 1
-                uncle.color = RBNode.RBColor.BLACK //force your uncle to be famous
-                dad.color = RBNode.RBColor.BLACK //dad gets famous with him
-                grandpa.color = RBNode.RBColor.RED //force grandpa to red, he has such successful children that he's forgotten about
-                you = grandpa //well now you possess the poor soul of your grandpa
-                //Lets see if you're a problem in your family...
+                uncle.color = RBNode.RBColor.BLACK
+                dad.color = RBNode.RBColor.BLACK
+                grandpa.color = RBNode.RBColor.RED
+                you = grandpa
+
                 printTree()
             }
-            //Alright, so your uncle is famous or dead, we treat them the same
             else {
-                //If you are a middle child that's not good, we want you to be an edge child
+
                 if(dad.isRightChild() xor you.isRightChild()){
                     println("Case 2: rotate you to edge")
                     //CASE 2: Uncle is black or null, you are a middle child
-                    //Switch bodies with your dad
                     you = dad.also{dad = you}
-                    //Now you, in the body of your dad, want to move to the edge (the same side to your dad as your dad is to his dad)
-                    //Formally make yourself a child of your dad again but on the edge
-                    if(dad.isRightChild()) rotateLeft(you) else rotateRight(you) //rotates you the edge (same side of your dad)
-                    //Well we didn't quite solve the problem, you and your dad is still both unimportant but now that an easy fix
+                    if(dad.isRightChild()) rotateLeft(you) else rotateRight(you)
+
                 }
                 //CASE 3
                 println("Case 3: rotate grandpa to balance")
-                //make dad famous like his brother
+
                 dad.color = RBNode.RBColor.BLACK
-                //force grandpa to become red, he has such successful children that he's forgotten about
                 grandpa.color = RBNode.RBColor.RED
-                //you and your grandpa have so much in common you might as well be brothers...
                 if(dad.isRightChild()) rotateLeft(grandpa) else rotateRight(grandpa)
             }
         }
 
-        //If you were born from nothing, and you have no parents you are the king of the entire realm
-        //The king is important and thus must have the famous well-known black status
         if(you.getParent() == null) {
             println("Flipping root to black")
             you.color = RBNode.RBColor.BLACK;
@@ -158,7 +143,7 @@ open class RedBlackTree<E : Comparable<E>>(inputList: List<E> = emptyList()) : B
         }
     }
 
-    //precondition root is not null
+    //Precondition: root is not null
     //could be optimized to keep track of index in level while recurring but this is only for the printing method right now so there's not too much of a point
     private fun to2dArray(node: RBNode<E>?, arr: ArrayList<Array<RBNode<E>?>>, lvl: Int) : ArrayList<Array<RBNode<E>?>>{
         if (arr.size == lvl) {
