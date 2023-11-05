@@ -186,7 +186,6 @@ open class RedBlackTree<E : Comparable<E>>(inputList: List<E> = emptyList()) : B
     }
 
     fun printTree(){
-
         println("----------------------------------------------------------------------------------------------")
         //getRoot()?.recursivePrint()
         val arr = to2dArray(getRoot(), ArrayList(),0 )
@@ -204,5 +203,6 @@ open class RedBlackTree<E : Comparable<E>>(inputList: List<E> = emptyList()) : B
             println()
         }
         println("----------------------------------------------------------------------------------------------")
+
     }
 }
