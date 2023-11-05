@@ -10,10 +10,8 @@ open class RedBlackTree<E : Comparable<E>>(inputList: List<E> = emptyList()) : B
     constructor(root : E) : this(listOf(root))
 
     override fun add(element : E) : RBNode<E> {
-        println("Adding $element")
         val addedNode = add(RBNode(element, null)) as RBNode
         insertFixUp(addedNode)
-        printTree()
         return addedNode
     }
 
@@ -22,45 +20,33 @@ open class RedBlackTree<E : Comparable<E>>(inputList: List<E> = emptyList()) : B
         var you = node
 
         while (you.getParent()?.color == RBNode.RBColor.RED){
-            println("Insert fixup - You: $you")
-            printTree()
-            println()
-
             var dad = you.getParent()!!
             val grandpa = dad.getParent()!!
             val uncle = if(dad.isRightChild()) grandpa.getLeft() else grandpa.getRight()
 
             if (uncle?.color == RBNode.RBColor.RED) {
-                println("Case 1: Color swap + tp to grandpa  -  Uncle: $uncle is red")
-
                 //CASE 1
                 uncle.color = RBNode.RBColor.BLACK
                 dad.color = RBNode.RBColor.BLACK
                 grandpa.color = RBNode.RBColor.RED
                 you = grandpa
-
-                printTree()
             }
             else {
 
                 if(dad.isRightChild() xor you.isRightChild()){
-                    println("Case 2: rotate you to edge")
                     //CASE 2: Uncle is black or null, you are a middle child
                     you = dad.also{dad = you}
                     if(dad.isRightChild()) rotateLeft(you) else rotateRight(you)
-
+                    //You are now an edge child
                 }
-                //CASE 3
-                println("Case 3: rotate grandpa to balance")
-
+                //CASE 3: You are an edge child
                 dad.color = RBNode.RBColor.BLACK
                 grandpa.color = RBNode.RBColor.RED
                 if(dad.isRightChild()) rotateLeft(grandpa) else rotateRight(grandpa)
             }
         }
 
-        if(you.getParent() == null) {
-            println("Flipping root to black")
+        if(you.getParent() == null) {//Flipping root to Black
             you.color = RBNode.RBColor.BLACK;
             return
         }
@@ -74,7 +60,6 @@ open class RedBlackTree<E : Comparable<E>>(inputList: List<E> = emptyList()) : B
 
     //Precondition: 👑 has a 🤴(right child)
     private fun rotateLeft(`👑`: RBNode<E>){
-        println("Rotating left")
         val `🤴` = `👑`.getRight()!!
         val parent = `👑`.getParent()
         `👑`.reassignRight(`🤴`.getLeft())
@@ -88,11 +73,9 @@ open class RedBlackTree<E : Comparable<E>>(inputList: List<E> = emptyList()) : B
                 parent.reassignLeft(`🤴`)
             else parent.reassignRight(`🤴`)
         }
-        printTree()
     }
     //Precondition: 👑 has a 👸(left child)
     private fun rotateRight(`👑`: RBNode<E>){
-        println("Rotating right")
         val `👸` = `👑`.getLeft()!!
         val parent = `👑`.getParent()
         `👑`.reassignLeft(`👸`.getRight())
@@ -106,7 +89,6 @@ open class RedBlackTree<E : Comparable<E>>(inputList: List<E> = emptyList()) : B
                 parent.reassignLeft(`👸`)
             else parent.reassignRight(`👸`)
         }
-        printTree()
     }
 
 
@@ -172,7 +154,6 @@ open class RedBlackTree<E : Comparable<E>>(inputList: List<E> = emptyList()) : B
 
     fun printTree(){
         println("----------------------------------------------------------------------------------------------")
-        //getRoot()?.recursivePrint()
         val arr = to2dArray(getRoot(), ArrayList(),0 )
         //this is a stupid way to get the maximum size that a node will be printed at, but it works sooo
         val len = arr.flatMap{it.asIterable()} .maxBy{it.toString().length} .toString().length -9 //-9 cause dumb colors
