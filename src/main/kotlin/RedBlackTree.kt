@@ -27,7 +27,6 @@ open class RedBlackTree<E : Comparable<E>>(inputList: List<E> = emptyList()) : B
         while (you.getParent()?.color == RBNode.RBColor.RED){
             println("Insert fixup - You: $you")
             printTree()
-            println()
             //this is your dad
             var dad = you.getParent()!!
             //this is your dads dad
